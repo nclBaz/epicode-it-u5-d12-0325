@@ -1,6 +1,7 @@
 package riccardogulin.u5d12.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import riccardogulin.u5d12.entities.User;
 import riccardogulin.u5d12.exceptions.UnauthorizedException;
@@ -13,6 +14,8 @@ public class AuthService {
 	private UsersService usersService;
 	@Autowired
 	private JWTTools jwtTools;
+	@Autowired
+	private PasswordEncoder bcrypt;
 
 	public String checkCredentialsAndGenerateToken(LoginDTO body) {
 		// 1. Controllo credenziali
@@ -21,8 +24,7 @@ public class AuthService {
 
 		// 1.2 Se esiste verifico che la sua password corrisponda a quella del body
 		// 1.3 Se una delle 2 verifiche non va a buon fine --> 401
-		if (found.getPassword().equals(body.password())) {
-			// TODO: Migliorare gestione password
+		if (bcrypt.matches(body.password(), found.getPassword())) {
 			// 2. Se credenziali OK --> Genero un access token
 			// 3. Ritorno il token
 			return jwtTools.createToken(found);

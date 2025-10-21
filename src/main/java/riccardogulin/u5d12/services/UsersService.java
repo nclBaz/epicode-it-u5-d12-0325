@@ -4,11 +4,11 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import riccardogulin.u5d12.entities.User;
@@ -33,7 +33,7 @@ public class UsersService {
 	@Autowired
 	private Cloudinary imageUploader;
 	@Autowired
-	private MessageSource messageSource;
+	private PasswordEncoder bcrypt;
 
 	public Page<User> findAll(int pageNumber, int pageSize, String sortBy) {
 		if (pageSize > 50) pageSize = 50;
@@ -49,7 +49,7 @@ public class UsersService {
 		);
 
 		// 2. Aggiungo dei campi server-generated (tipo avatarURL)
-		User newUser = new User(payload.name(), payload.surname(), payload.email(), payload.password());
+		User newUser = new User(payload.name(), payload.surname(), payload.email(), bcrypt.encode(payload.password()));
 		newUser.setAvatarURL("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
 
 		// 3. Salvo

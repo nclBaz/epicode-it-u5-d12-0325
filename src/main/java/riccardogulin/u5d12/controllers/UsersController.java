@@ -31,7 +31,7 @@ public class UsersController {
 
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('ADMIN')") // Solo gli admin possono visualizzare la lista di tutti gli utenti
+	//@PreAuthorize("hasAuthority('ADMIN')") // Solo gli admin possono visualizzare la lista di tutti gli utenti
 	public Page<User> findAll(@RequestParam(defaultValue = "0") int page,
 	                          @RequestParam(defaultValue = "10") int size,
 	                          @RequestParam(defaultValue = "id") String sortBy) {

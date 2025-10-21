@@ -2,11 +2,20 @@ package riccardogulin.u5d12.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Annotazione che serve per indicare che questa non sarà una classe di configurazione qualsiasi, bensì sarà una classe di
@@ -35,6 +44,28 @@ public class SecurityConfig {
 
 		// - aggiungere ulteriori funzionalità custom
 
+		httpSecurity.cors(Customizer.withDefaults()); // OBBLIGATORIA SE VOGLIAMO USARE IL BEAN SOTTOSTANTE PER LA CONFIGURAZIONE CORS
+
 		return httpSecurity.build();
 	}
+
+	@Bean
+	public PasswordEncoder getBCrypt() {
+		return new BCryptPasswordEncoder(12);
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://www.mywonderfulfe.com"));
+		// Mi sto creando una WHITELIST di uno o più indirizzi FRONTEND che voglio possano accedere a questo BE senza problemi di CORS
+		// Volendo (anche se rischioso, ma utile per API pubbliche) potrei mettere '*' che permette l'accesso a tutti
+		configuration.setAllowedMethods(List.of("*"));
+		configuration.setAllowedHeaders(List.of("*"));
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration); // applico la configurazione di sopra a tutti gli endpoint ("/**")
+		return source;
+	}// N.B. Non dimenticarsi di aggiungere nella filter chain httpSecurity.cors(Customizer.withDefaults())!!!!!!!!!!!!!!!
+
 }
