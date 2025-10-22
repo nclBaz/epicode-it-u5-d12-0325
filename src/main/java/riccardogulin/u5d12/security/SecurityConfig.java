@@ -14,7 +14,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -57,7 +56,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://www.mywonderfulfe.com"));
+		configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://www.mywonderfulfe.com"));
 		// Mi sto creando una WHITELIST di uno o più indirizzi FRONTEND che voglio possano accedere a questo BE senza problemi di CORS
 		// Volendo (anche se rischioso, ma utile per API pubbliche) potrei mettere '*' che permette l'accesso a tutti
 		configuration.setAllowedMethods(List.of("*"));

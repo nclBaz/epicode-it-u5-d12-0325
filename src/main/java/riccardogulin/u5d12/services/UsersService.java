@@ -16,6 +16,7 @@ import riccardogulin.u5d12.exceptions.BadRequestException;
 import riccardogulin.u5d12.exceptions.NotFoundException;
 import riccardogulin.u5d12.payload.NewUserDTO;
 import riccardogulin.u5d12.repositories.UsersRepository;
+import riccardogulin.u5d12.tools.MailgunSender;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +35,8 @@ public class UsersService {
 	private Cloudinary imageUploader;
 	@Autowired
 	private PasswordEncoder bcrypt;
+	@Autowired
+	private MailgunSender mailgunSender;
 
 	public Page<User> findAll(int pageNumber, int pageSize, String sortBy) {
 		if (pageSize > 50) pageSize = 50;
@@ -58,7 +61,10 @@ public class UsersService {
 		// 4. Log
 		log.info("L'utente con id: " + savedUser.getId() + " è stato salvato correttamente!");
 
-		// 5. Ritorno l'utente salvato
+		// 5. Invio email di registrazione
+		mailgunSender.sendRegistrationEmail(savedUser);
+
+		// 6. Ritorno l'utente salvato
 		return savedUser;
 	}
 
